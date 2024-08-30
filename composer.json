@@ -1,0 +1,19 @@
+{
+    "name": "clarity/ollama-code-feedback",
+    "description": "Utilize the Ollama open-source local LLM to provide insightful feedback on modified code.",
+    "type": "library",
+    "require": {},
+    "require-dev": {},
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Clarity\\OllamaCodeFeedback\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Melle Roffel"
+        }
+    ],
+    "minimum-stability": "stable"
+}
