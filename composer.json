@@ -1,5 +1,5 @@
 {
-    "name": "clarity/ollama-code-feedback",
+    "name": "clarity-digital/ollama-code-feedback",
     "description": "Utilize the Ollama open-source local LLM to provide insightful feedback on modified code.",
     "type": "library",
     "require": {},

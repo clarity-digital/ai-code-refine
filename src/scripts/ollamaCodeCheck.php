@@ -1,10 +1,17 @@
 <?php
+//setup
+$config = include 'setConfig.php';
+$model = strval($config['model']);
+$gitDiffCommand = strval($config['git_diff_command']);
+$codeLanguages = strval($config['code_languages']);
+$frameworks = strval($config['frameworks']);
+$extendingPrompt = strval($config['extending_prompt']);
 
-//does not include deleted files, or files that are not staged
-$changes = shell_exec('git diff -U14 --diff-filter=ACMRTUXB --staged');
+//execute
+$changes = shell_exec($gitDiffCommand);
 ini_set('memory_limit', '1024M');
 
-if ($changes === null || strlen($changes) === 0) {
+if ($changes === null || strlen($changes) === 0 || strlen(str_replace(' ', '', $changes)) === 0) {
     echo "\033[31mNo changes recognized (Deleted files are not included to be checked)...\033[0m.";
 
     return;
@@ -12,15 +19,16 @@ if ($changes === null || strlen($changes) === 0) {
 
 $prompt = "
 I will give you the output of my 'git diff -U20' command, keep in mind you only see a small portion of a code snippet. 
-You should NOT check for major php coding convention mistakes ignore these, focus on giving feedback for major mistakes for/in implementations of modern Laravel/php code. 
+You should NOT check for minor/mediocre $codeLanguages coding convention mistakes ignore these, focus on giving feedback for major mistakes for/in implementations of modern framework(s): $frameworks or $codeLanguages code. 
 Do NOT give feedback that says that code comments should be added.
-Emphasize what code contain mistakes and emphasize how it can be improved, try to give a concise answer.
-If there is no major mistakes found in the code please just return 'no major mistakes'.
+Emphasize what code contains mistakes and emphasize how it can be improved, try to give a concise answer.
+If there is no major mistakes found in the code please just return 'no major mistakes found'.
+$extendingPrompt 
 The 'git diff -U20' output:
 ";
 
 $data = [
-    'model' => 'deepseek-coder-v2',
+    'model' => $model,
     'prompt' => $prompt.$changes,
     'temperature' => '0.3',
 ];

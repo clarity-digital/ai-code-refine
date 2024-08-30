@@ -1,6 +1,6 @@
 # *IN DEVELOPMENT*
 
-# A.I. code feedback (via Ollama LLM)
+# A.I. code feedback (via Ollama LLM provider)
 
 Utilize the Ollama open-source local LLM to provide insightful feedback on modified code.
 Which will be binded to your pre commit script.
@@ -23,12 +23,12 @@ https://typicode.github.io/husky/get-started.html
 ```
 
 ### Step 3 - add Ollama feedback code to the pre-commit script
-<b>Add the following code to the pre-commit file</b></br>
-At the start of the script:
+<b>Add the following code to the .husky/pre-commit file</b></br>
+At the start of the script to validate that the A.I. model is running:
 ```php
 echo "\n";
 echo "\033[32mValidating if Ollama is running...\033[0m"
-php ./vendor/Clarity/ai-code-refine/src/scripts/ollamaIsRunningCheck.php
+php ./vendor/clarity-digital/ai-code-refine/src/scripts/ollamaIsRunningCheck.php
 
 echo '\n';
 ```
@@ -36,10 +36,35 @@ At the end of the script:
 ```php
 echo "\n";
 echo "\033[32mRunning Ollama A.I. code check, please wait...\033[0m"
-php ./vendor/Clarity/ai-code-refine/src/scripts/ollamaCodeCheck.php
+php ./vendor/clarity-digital/ai-code-refine/src/scripts/ollamaCodeCheck.php
 
 echo '\n';
 echo '\033[32mEnd Ollama A.I. response\033[0m';
 ```
-</br><b>Not implemented yet</b></br>
-Run php vendor/Clarity/ai-code-refine/src/scripts/init.php
+## Configurations
+By default the following config file is set, which instructs the A.I. model what model to use and what specific code languages and frameworks to focus its feedback on.
+```php
+[
+    'model' => 'deepseek-coder-v2',
+    'frameworks' => 'laravel',
+    'code_languages' => 'php',
+    'git_diff_command' => 'git diff -U14 --diff-filter=ACMRTUXB --staged',
+    'extending_prompt' => '',
+]
+```
+
+<br>
+
+#### You can modify this config file to suit your preferences.
+1. Within your root folder create a ```/config``` directory and within create a file named ```'ai_code_config.php'```.
+2. Ensure this config file returns an array. If a config key is not set in the custom config file, the default value(s) will be used.
+
+#### Example custom config file</b>
+```php
+return [
+    'model' => 'deepseek-coder-v1',
+    'frameworks' => 'laravel & react',
+    'code_languages' => 'php & javascript',
+    'extending_prompt' => 'Also focus on giving me feedback for better function naming',
+];
+```
