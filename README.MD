@@ -5,7 +5,9 @@
 Utilize the Ollama open-source local LLM to provide insightful feedback on modified code.
 Which will be binded to your pre commit script.
 
-
+```bash
+composer require clarity-digital/ollama-code-feedback
+```
 ## Installation
 ### Step 1 - install Ollama
 Make sure you have <b>Ollama</b> installed and running (<a href="https://ollama.com/download" target="_blank">link</a>)</br>
