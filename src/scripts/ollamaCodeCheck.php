@@ -8,7 +8,13 @@ $frameworks = strval($config['frameworks']);
 $extendingPrompt = strval($config['extending_prompt']);
 
 //execute
-$changes = shell_exec($gitDiffCommand);
+$changes = explode('diff --git', shell_exec($gitDiffCommand));
+for ($i = 0; $i < count($changes); $i++) {
+    $num = $i + 1;
+    $changes[$i] = "[End of previous code snippet] The following code snippet must be checked for major critical errors and nothing else,
+Code Snippet: ".$changes[$i].". !end of code change snippet!";
+}
+$changes = implode('', $changes);
 ini_set('memory_limit', '1024M');
 
 if ($changes === null || strlen($changes) === 0 || strlen(str_replace(' ', '', $changes)) === 0) {
@@ -21,16 +27,13 @@ $prompt = "
 I will give you the output of my 'git diff -U20' command, keep in mind you only see a small portion of a code snippet. 
 You should NOT check for minor/mediocre $codeLanguages coding convention mistakes ignore these, focus on giving feedback for major mistakes for/in implementations of modern framework(s): $frameworks or $codeLanguages code. 
 Do NOT give feedback that says that code comments should be added.
-Emphasize what code contains mistakes and emphasize how it can be improved, try to give a concise answer.
-If there is no major mistakes found in the code please just return 'no major mistakes found'.
-$extendingPrompt 
-The 'git diff -U20' output:
+$extendingPrompt .
 ";
 
 $data = [
     'model' => $model,
     'prompt' => $prompt.$changes,
-    'temperature' => '0.3',
+    'temperature' => '0.2',
 ];
 
 $jsonData = json_encode($data);
@@ -92,6 +95,12 @@ function colorizeOutput($text)
     // Blue color code for the word and the parenthesis
     $text = preg_replace('/(\w+)(\()/', "\033[94m$1\033[0m$2", $text);
 
+    // Colorize words followed by '->'
+    $text = preg_replace('/(\w+)(->)/', "\033[94m$1\033[0m$2", $text);
+
+    // Colorize words followed by '->'
+    $text = preg_replace('/(\w+)(->)/', "\033[94m$1\033[0m$2", $text);
+
     // This pattern matches any sequence of digits that are directly followed by a '.'
     $pattern = '/(\d+)\.(?=\s|$)/';
 
@@ -105,6 +114,13 @@ function colorizeOutput($text)
     $patternText = '/\*\*(.*?)\*\*/';
     $replacementText = "\033[33m\033[1m$1\033[0m";
     $colorizedText = preg_replace($patternText, $replacementText, $colorizedNumbersText);
+
+    $colorizedText = preg_replace_callback('/^(###\s.*)$/m', function ($matches) {
+        // Define the color code you want
+        $colorCode = "\033[35m"; // Example color code (magenta)
+        // Return the colored text
+        return "$colorCode$matches[1]\033[0m";
+    }, $colorizedText);
 
     return $colorizedText;
 }
