@@ -25,20 +25,20 @@ https://typicode.github.io/husky/get-started.html
 ```
 
 ### Step 3 - add Ollama feedback code to the pre-commit script
-<b>Add the following code to the .husky/pre-commit file</b></br>
-At the start of the script to validate that the A.I. model is running:
+Add the following line of codes to the ```.husky/pre-commit``` file</br>
+<b>At the start of the script to validate that the A.I. model is running:</b>
 ```php
 echo "\n";
 echo "\033[32mValidating if Ollama is running...\033[0m"
-php ./vendor/clarity-digital/ai-code-refine/src/scripts/ollamaIsRunningCheck.php
+php ./vendor/clarity-digital/ollama-code-feedback/src/scripts/ollamaIsRunningCheck.php
 
 echo '\n';
 ```
-At the end of the script:
+<b>At the end of the script:</b>
 ```php
 echo "\n";
 echo "\033[32mRunning Ollama A.I. code check, please wait...\033[0m"
-php ./vendor/clarity-digital/ai-code-refine/src/scripts/ollamaCodeCheck.php
+php ./vendor/clarity-digital/ollama-code-feedback/src/scripts/ollamaCodeCheck.php
 
 echo '\n';
 echo '\033[32mEnd Ollama A.I. response\033[0m';
