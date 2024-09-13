@@ -24,7 +24,7 @@ foreach ($changedStagedFileNames as $changedFileName) {
 
 $allChanges = implode('. Next: ', $allChanges);
 $prompt = "
-    Scan the changes for the following mistakes: syntax errors, production code vulnerabilities, major mistakes with the framework(s): $frameworks, major coding language(s) mistakes: $codeLanguages.
+    Scan the changes for the following mistakes: syntax errors, production code vulnerabilities, major mistakes with the framework(s): $frameworks, major coding language(s) mistakes: $codeLanguages, coding mistakes that would cause 500 errors.
     Ignore 'git diff' output styling in the code snippets, do not give feedback on this part.
     !!Dont explain code that does not contain mistakes!!
     Strictly format your feedback as follows:
@@ -32,7 +32,7 @@ $prompt = "
     - first showcase a small part of the original code which contains the code mistake
     - real briefly explain in less then 20 words how it should be improved
     
-    
+    $extendingPrompt
     
     The changes for this staged git commit: $allChanges.
     ";
@@ -57,7 +57,7 @@ curl_setopt($ch, CURLOPT_TIMEOUT, 300);
 
 $response = curl_exec($ch);
 if (curl_errno($ch) || $response === null) {
-    echo "\033[31mError connecting to the local Ollama, make sure 'deepseek-coder-v2' is running...\033[0m";
+    echo "\033[31mError connecting to the local Ollama, make sure Ollama is running...\033[0m";
 
     return;
 }
