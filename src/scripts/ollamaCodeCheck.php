@@ -2,7 +2,6 @@
 //setup
 $config = include 'setConfig.php';
 $model = strval($config['model']);
-$gitDiffCommand = strval($config['git_diff_command']);
 $codeLanguages = strval($config['code_languages']);
 $frameworks = strval($config['frameworks']);
 $extendingPrompt = strval($config['extending_prompt']);
