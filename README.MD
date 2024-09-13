@@ -50,6 +50,7 @@ By default the following config file is set, which instructs the A.I. model what
     'model' => 'llama3',
     'frameworks' => 'laravel',
     'code_languages' => 'php',
+    'modified_files_only' => true, //Or: false, will also take new created staged files into consideration
     'extending_prompt' => '',
 ]
 ```
