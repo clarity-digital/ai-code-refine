@@ -39,7 +39,7 @@ if (!str_contains($ollamaList, $model)) {
     echo "\033[32mSuccessfully downloaded Ollama model: '$model'.\033[0m\n";
 }
 
-echo "\033[32mOllama is running successfully.\033[0m";
+echo "\033[32mOllama is running successfully.\033[0m\n";
 curl_close($ch);
 
 return 0;

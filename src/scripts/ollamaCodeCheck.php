@@ -11,7 +11,7 @@ $changedStagedFileNames = include 'getStagedFileNames.php';
 ini_set('memory_limit', '1024M');
 
 if ($changedStagedFileNames === null || count($changedStagedFileNames) === 0) {
-    echo "\033[31mNo changes recognized (Deleted files are not included to be checked)...\033[0m.";
+    echo "\033[31mNo changes recognized (Deleted files are not included to be checked)...\033[0m.\n";
 
     return;
 }
@@ -57,7 +57,7 @@ curl_setopt($ch, CURLOPT_TIMEOUT, 300);
 
 $response = curl_exec($ch);
 if (curl_errno($ch) || $response === null) {
-    echo "\033[31mError connecting to the local Ollama, make sure Ollama is running...\033[0m";
+    echo "\033[31mError connecting to the local Ollama, make sure Ollama is running...\033[0m\n";
 
     return;
 }
@@ -70,7 +70,7 @@ $responses = array_column($parsedBody, 'response');
 array_unshift($responses, "\033[33m\033[1m[Ollama feedback]\033[0m \n");
 $concatenatedResponse = implode('', $responses);
 
-echo colorizeOutput($concatenatedResponse);
+echo colorizeOutput($concatenatedResponse)."\n";
 
 return $concatenatedResponse;
 
