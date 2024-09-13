@@ -14,6 +14,15 @@ if (is_file('./config/ai_code_config.php')) {
         ) {
             $originalConfig[$key] = $customConfig[$key];
         }
+
+        if (
+            key_exists($key, $customConfig) &&
+            isset($customConfig[$key]) &&
+            is_bool($customConfig[$key])
+        ) {
+            $originalConfig[$key] = $customConfig[$key];
+        }
+
     }
 }
 

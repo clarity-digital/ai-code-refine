@@ -12,7 +12,7 @@ composer require clarity-digital/ollama-code-feedback
 ### Step 1 - install Ollama
 Make sure you have <b>Ollama</b> installed and running (<a href="https://ollama.com/download" target="_blank">link</a>)</br>
 It is up to you which AI model you want to use, but we recommend using: </br>
-<b>deepseek-coder-v2</b> (<a href="https://ollama.com/library/deepseek-coder-v2" target="_blank">link</a>)
+<b>llama3</b> (<a href="https://ollama.com/library/llama3" target="_blank">link</a>)
 
 ### Step 2 - setup Husky pre-commit
 <b>Install husky if not done already.</b></br></br>
@@ -47,10 +47,10 @@ echo '\033[32mEnd Ollama A.I. response\033[0m';
 By default the following config file is set, which instructs the A.I. model what model to use and what specific code languages and frameworks to focus its feedback on.
 ```php
 [
-    'model' => 'deepseek-coder-v2',
+    'model' => 'llama3',
     'frameworks' => 'laravel',
     'code_languages' => 'php',
-    'git_diff_command' => 'git diff -U14 --diff-filter=ACMRTUXB --staged',
+    'modified_files_only' => true, //Or: false, will also take new created staged files into consideration
     'extending_prompt' => '',
 ]
 ```

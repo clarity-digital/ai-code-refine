@@ -2,38 +2,45 @@
 //setup
 $config = include 'setConfig.php';
 $model = strval($config['model']);
-$gitDiffCommand = strval($config['git_diff_command']);
 $codeLanguages = strval($config['code_languages']);
 $frameworks = strval($config['frameworks']);
 $extendingPrompt = strval($config['extending_prompt']);
 
 //execute
-$changes = explode('diff --git', shell_exec($gitDiffCommand));
-for ($i = 0; $i < count($changes); $i++) {
-    $num = $i + 1;
-    $changes[$i] = "[End of previous code snippet] The following code snippet must be checked for major critical errors and nothing else,
-Code Snippet: ".$changes[$i].". !end of code change snippet!";
-}
-$changes = implode('', $changes);
+$changedStagedFileNames = include 'getStagedFileNames.php';
 ini_set('memory_limit', '1024M');
 
-if ($changes === null || strlen($changes) === 0 || strlen(str_replace(' ', '', $changes)) === 0) {
-    echo "\033[31mNo changes recognized (Deleted files are not included to be checked)...\033[0m.";
+if ($changedStagedFileNames === null || count($changedStagedFileNames) === 0) {
+    echo "\033[31mNo changes recognized (Deleted files are not included to be checked)...\033[0m.\n";
 
     return;
 }
 
-$prompt = "
-I will give you the output of my 'git diff -U20' command, keep in mind you only see a small portion of a code snippet. 
-You should NOT check for minor/mediocre $codeLanguages coding convention mistakes ignore these, focus on giving feedback for major mistakes for/in implementations of modern framework(s): $frameworks or $codeLanguages code. 
-Do NOT give feedback that says that code comments should be added.
-$extendingPrompt .
-";
+$allChanges = [];
+foreach ($changedStagedFileNames as $changedFileName) {
+    $diff = shell_exec('git diff HEAD -U14 '.$changedFileName);
+    $allChanges[] = "Git diff changes in file $changedFileName with changes: ".$diff;
+}
 
+$allChanges = implode('. Next: ', $allChanges);
+$prompt = "
+    Scan the changes for the following mistakes: syntax errors, production code vulnerabilities, major mistakes with the framework(s): $frameworks, major coding language(s) mistakes: $codeLanguages, coding mistakes that would cause 500 errors.
+    Ignore 'git diff' output styling in the code snippets, do not give feedback on this part.
+    !!Dont explain code that does not contain mistakes!!
+    Make sure your feedback is correct
+    Strictly format your feedback as follows:
+    - File or function name which contains the mistake
+    - first showcase a small part of the original code which contains the code mistake
+    - real briefly explain in less then 20 words how it should be improved
+    
+    $extendingPrompt
+    
+    The changes for this staged git commit: $allChanges.
+    ";
 $data = [
     'model' => $model,
-    'prompt' => $prompt.$changes,
-    'temperature' => '0.2',
+    'prompt' => $prompt,
+    'temperature' => '0.0',
 ];
 
 $jsonData = json_encode($data);
@@ -51,7 +58,7 @@ curl_setopt($ch, CURLOPT_TIMEOUT, 300);
 
 $response = curl_exec($ch);
 if (curl_errno($ch) || $response === null) {
-    echo "\033[31mError connecting to the local Ollama, make sure 'deepseek-coder-v2' is running...\033[0m";
+    echo "\033[31mError connecting to the local Ollama, make sure Ollama is running...\033[0m\n";
 
     return;
 }
@@ -64,7 +71,7 @@ $responses = array_column($parsedBody, 'response');
 array_unshift($responses, "\033[33m\033[1m[Ollama feedback]\033[0m \n");
 $concatenatedResponse = implode('', $responses);
 
-echo colorizeOutput($concatenatedResponse);
+echo colorizeOutput($concatenatedResponse)."\n";
 
 return $concatenatedResponse;
 
