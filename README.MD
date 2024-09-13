@@ -51,6 +51,7 @@ By default the following config file is set, which instructs the A.I. model what
     'frameworks' => 'laravel',
     'code_languages' => 'php',
     'modified_files_only' => true, //Or: false, will also take new created staged files into consideration
+    'per_file' => false, //Or: false, will send a request per staged code file
     'extending_prompt' => '',
 ]
 ```
@@ -68,5 +69,6 @@ return [
     'frameworks' => 'laravel & react',
     'code_languages' => 'php & javascript',
     'extending_prompt' => 'Also focus on giving me feedback for better function naming',
+    'per_file' => true,
 ];
 ```

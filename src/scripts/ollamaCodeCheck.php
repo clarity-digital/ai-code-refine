@@ -16,14 +16,7 @@ if ($changedStagedFileNames === null || count($changedStagedFileNames) === 0) {
     return;
 }
 
-$allChanges = [];
-foreach ($changedStagedFileNames as $changedFileName) {
-    $diff = shell_exec('git diff HEAD -U14 '.$changedFileName);
-    $allChanges[] = "Git diff changes in file $changedFileName with changes: ".$diff;
-}
-
-$allChanges = implode('. Next: ', $allChanges);
-$prompt = "
+$basePrompt = "    
     Scan the changes for the following mistakes: syntax errors, production code vulnerabilities, major mistakes with the framework(s): $frameworks, major coding language(s) mistakes: $codeLanguages, coding mistakes that would cause 500 errors.
     Ignore 'git diff' output styling in the code snippets, do not give feedback on this part.
     !!Dont explain code that does not contain mistakes!!
@@ -31,49 +24,101 @@ $prompt = "
     Strictly format your feedback as follows:
     - File or function name which contains the mistake
     - first showcase a small part of the original code which contains the code mistake
-    - real briefly explain in less then 20 words how it should be improved
-    
-    $extendingPrompt
-    
-    The changes for this staged git commit: $allChanges.
-    ";
-$data = [
-    'model' => $model,
-    'prompt' => $prompt,
-    'temperature' => '0.0',
-];
+    - real briefly explain in less then 50 words how it should be improved
+";
 
-$jsonData = json_encode($data);
+if ($config['per_file']) {
+    $feedbackFilesIndex = 0;
+    $totalFeedbackFilesCount = count($changedStagedFileNames);
+    foreach ($changedStagedFileNames as $changedFileName) {
+        $feedbackFilesIndex++;
+        $changes = shell_exec('git diff HEAD -U14 '.$changedFileName);
+        $prompt = $basePrompt." ".$extendingPrompt." The changes for this staged git commit file $changedFileName are: $changes";
+        $data = [
+            'model' => $model,
+            'prompt' => $prompt,
+            'temperature' => '0.0',
+        ];
 
-$ch = curl_init('http://localhost:11434/api/generate');
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-curl_setopt($ch, CURLOPT_POST, true);
-curl_setopt($ch, CURLOPT_POSTFIELDS, $jsonData);
-curl_setopt($ch, CURLOPT_HTTPHEADER, [
-    'Content-Type: application/json',
-    'Content-Length: '.strlen($jsonData),
-]);
-curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 60);
-curl_setopt($ch, CURLOPT_TIMEOUT, 300);
+        $jsonData = json_encode($data);
 
-$response = curl_exec($ch);
-if (curl_errno($ch) || $response === null) {
-    echo "\033[31mError connecting to the local Ollama, make sure Ollama is running...\033[0m\n";
+        $ch = curl_init('http://localhost:11434/api/generate');
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $jsonData);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Content-Type: application/json',
+            'Content-Length: '.strlen($jsonData),
+        ]);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 60);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 300);
 
-    return;
+        $response = curl_exec($ch);
+        if (curl_errno($ch) || $response === null) {
+            echo "\033[31mError connecting to the local Ollama, make sure Ollama is running...\033[0m\n";
+
+            return;
+        }
+
+        curl_close($ch);
+
+        $parsedBody = parseMultiJson($response);
+
+        $responses = array_column($parsedBody, 'response');
+        array_unshift($responses, "\033[33m\033[1m[Ollama feedback]\033[0m \n");
+        $concatenatedResponse = implode('', $responses);
+
+        echo colorizeOutput($concatenatedResponse)."\n";
+        echo "\n\033[33m\033[1mFeedback [$feedbackFilesIndex/$totalFeedbackFilesCount]\033[0m\n";
+    }
+} else {
+    $allChanges = [];
+    foreach ($changedStagedFileNames as $changedFileName) {
+        $diff = shell_exec('git diff HEAD -U14 '.$changedFileName);
+        $allChanges[] = "Git diff changes in file $changedFileName with changes: ".$diff;
+    }
+
+    $allChanges = implode('. Next: ', $allChanges);
+    $prompt = $basePrompt.$extendingPrompt." The changes for this staged git commit: $allChanges";
+    $data = [
+        'model' => $model,
+        'prompt' => $prompt,
+        'temperature' => '0.0',
+    ];
+
+    $jsonData = json_encode($data);
+
+    $ch = curl_init('http://localhost:11434/api/generate');
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $jsonData);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, [
+        'Content-Type: application/json',
+        'Content-Length: '.strlen($jsonData),
+    ]);
+    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 60);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 300);
+
+    $response = curl_exec($ch);
+    if (curl_errno($ch) || $response === null) {
+        echo "\033[31mError connecting to the local Ollama, make sure Ollama is running...\033[0m\n";
+
+        return;
+    }
+
+    curl_close($ch);
+
+    $parsedBody = parseMultiJson($response);
+
+    $responses = array_column($parsedBody, 'response');
+    array_unshift($responses, "\033[33m\033[1m[Ollama feedback]\033[0m \n");
+    $concatenatedResponse = implode('', $responses);
+
+    echo colorizeOutput($concatenatedResponse)."\n";
+
+    return $concatenatedResponse;
 }
 
-curl_close($ch);
-
-$parsedBody = parseMultiJson($response);
-
-$responses = array_column($parsedBody, 'response');
-array_unshift($responses, "\033[33m\033[1m[Ollama feedback]\033[0m \n");
-$concatenatedResponse = implode('', $responses);
-
-echo colorizeOutput($concatenatedResponse)."\n";
-
-return $concatenatedResponse;
 
 function parseMultiJson($string)
 {
