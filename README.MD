@@ -1,7 +1,6 @@
 # A.I. code feedback (via Ollama LLM provider)
 
-Utilize the Ollama open-source local LLM to provide insightful feedback on modified code.
-Which will be binded to your pre commit script.
+Utilize the Ollama open-source local LLM to provide insightful feedback on modified code, which can be integrated with your pre-commit script or used to analyze all your changes against your primary branch.
 
 ```bash
 composer require clarity-digital/ollama-code-feedback
