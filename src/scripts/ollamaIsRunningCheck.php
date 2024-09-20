@@ -1,4 +1,6 @@
 <?php
+echo "\n";
+echo "\033[32mValidating if Ollama is running...\033[0m\n";
 
 $url = 'http://localhost:11434';
 
@@ -42,5 +44,7 @@ if (!str_contains($ollamaList, $model)) {
 echo "\033[32mOllama is running successfully.\033[0m\n";
 curl_close($ch);
 
+
+echo "\n";
 return 0;
 
