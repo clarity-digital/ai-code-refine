@@ -5,8 +5,6 @@ echo "\033[32mRunning Ollama A.I. code check, please wait...\033[0m";
 //setup
 $config = include 'setConfig.php';
 $model = strval($config['model']);
-$codeLanguages = strval($config['code_languages']);
-$frameworks = strval($config['frameworks']);
 $extendingPrompt = strval($config['extending_prompt']);
 
 //execute
@@ -19,16 +17,7 @@ if ($changedStagedFileNames === null || count($changedStagedFileNames) === 0) {
     return;
 }
 
-$basePrompt = "    
-    Scan the changes for the following mistakes: syntax errors, production code vulnerabilities, major mistakes with the framework(s): $frameworks, major coding language(s) mistakes: $codeLanguages, coding mistakes that would cause 500 errors.
-    Ignore 'git diff' output styling in the code snippets, do not give feedback on this part.
-    !!Dont explain code that does not contain mistakes!!
-    Make sure your feedback is correct
-    Strictly format your feedback as follows:
-    - File or function name which contains the mistake
-    - first showcase a small part of the original code which contains the code mistake
-    - real briefly explain in less then 50 words how it should be improved
-";
+$basePrompt = include 'getBasePrompt.php';
 
 if ($config['per_file']) {
     $feedbackFilesIndex = 0;
