@@ -1,6 +1,6 @@
 <?php
 echo "\n";
-echo "\033[32mValidating if Ollama is running...\033[0m";
+echo "\033[32mValidating if Ollama is running...\033[0m\n";
 
 $url = 'http://localhost:11434';
 

@@ -49,12 +49,7 @@ https://typicode.github.io/husky/get-started.html
 ```
 
 ### Step 2 - add Ollama feedback code to the pre-commit script
-Add the following line of codes to the ```.husky/pre-commit``` file</br>
-<b>At the start of the script to validate that the A.I. model is running:</b>
-```php
-php ./vendor/clarity-digital/ollama-code-feedback/src/scripts/ollamaIsRunningCheck.php
-```
-<b>At the end of the script:</b>
+Add the following line of code to the ```.husky/pre-commit``` file</br>
 ```php
 php ./vendor/clarity-digital/ollama-code-feedback/src/scripts/ollamaCodeCheck.php
 ```
@@ -79,7 +74,6 @@ By <b>default</b> the following config file is set, which instructs the A.I. mod
 #### You can modify this config file to suit your preferences.
 1. Within your root folder create a ```/config``` directory and within that directory create a file ```php``` named ```ai_code_config```.
 2. Ensure this config file returns an array. If a config key is not set in the custom config file, the default value(s) will be used.
-
 #### Example custom config file
 ```php
 return [
@@ -91,3 +85,4 @@ return [
     'per_file' => true,
 ];
 ```
+* Whenever you change the model the script will automatically download the Ollama model for you.

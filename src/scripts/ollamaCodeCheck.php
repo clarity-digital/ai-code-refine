@@ -1,4 +1,6 @@
 <?php
+include 'ollamaIsRunningCheck.php';
+
 echo "\n";
 echo "\033[32mRunning Ollama A.I. code check, please wait...\033[0m";
 
