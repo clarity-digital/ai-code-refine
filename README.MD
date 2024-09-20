@@ -1,5 +1,3 @@
-# *IN DEVELOPMENT*
-
 # A.I. code feedback (via Ollama LLM provider)
 
 Utilize the Ollama open-source local LLM to provide insightful feedback on modified code.
@@ -79,7 +77,7 @@ By <b>default</b> the following config file is set, which instructs the A.I. mod
 <br>
 
 #### You can modify this config file to suit your preferences.
-1. Within your root folder create a ```/config``` directory and within create a file ```php``` named ```ai_code_config```.
+1. Within your root folder create a ```/config``` directory and within that directory create a file ```php``` named ```ai_code_config```.
 2. Ensure this config file returns an array. If a config key is not set in the custom config file, the default value(s) will be used.
 
 #### Example custom config file
