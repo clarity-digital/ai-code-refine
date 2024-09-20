@@ -1,4 +1,7 @@
 <?php
+echo "\n";
+echo "\033[32mRunning Ollama A.I. code check, please wait...\033[0m";
+
 //setup
 $config = include 'setConfig.php';
 $model = strval($config['model']);
@@ -71,6 +74,9 @@ if ($config['per_file']) {
         echo colorizeOutput($concatenatedResponse)."\n";
         echo "\n\033[33m\033[1mFeedback [$feedbackFilesIndex/$totalFeedbackFilesCount]\033[0m\n";
     }
+
+    echo "\n";
+    echo "\033[32mEnd Ollama A.I. response\033[0m";
 } else {
     $allChanges = [];
     foreach ($changedStagedFileNames as $changedFileName) {
@@ -116,6 +122,8 @@ if ($config['per_file']) {
 
     echo colorizeOutput($concatenatedResponse)."\n";
 
+    echo "\n";
+    echo "\033[32mEnd Ollama A.I. response\033[0m";
     return $concatenatedResponse;
 }
 
