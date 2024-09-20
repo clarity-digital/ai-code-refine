@@ -87,4 +87,4 @@ return [
     'per_file' => true,
 ];
 ```
-* Whenever you change the model the script will automatically download the Ollama model for you.
+<sup>*</sup> Whenever you change the model the script will automatically download the Ollama model for you.
