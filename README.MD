@@ -22,7 +22,9 @@ composer require clarity-digital/ollama-code-feedback
 ### Step 1 - install Ollama
 Make sure you have <b>Ollama</b> installed and running (<a href="https://ollama.com/download" target="_blank">link</a>)</br>
 It is up to you which AI model you want to use, but we recommend using: </br>
-<b>llama3</b> (<a href="https://ollama.com/library/llama3" target="_blank">link</a>)
+<b>deepseek-coder-v2</b> (<a href="https://ollama.com/library/deepseek-coder-v2" target="_blank">link</a>)
+
+You can also take a look <a href="https://ollama.com/library?c=code" target="_blank"><b>here</b></a> to see all the coding models.
 
 ### <u>Review all current file changes vs primary branch</u>
 #### Execute the following php file
