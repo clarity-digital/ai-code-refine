@@ -10,6 +10,7 @@ $model = strval($config['model']);
 
 $codeLanguages = strval($config['code_languages']);
 $frameworks = strval($config['frameworks']);
+$extendingPrompt = strval($config['extending_prompt']);
 $primaryBranchName = strval($config['github_primary_branch_name']);
 
 $changedFileNames = include 'getAllChangedFilesNames.php';
@@ -22,7 +23,7 @@ foreach ($changedFileNames as $changedFileName) {
     $feedbackFilesIndex++;
     $changes = shell_exec("git diff origin/$primaryBranchName...HEAD -U14 ".$changedFileName);
 
-    $prompt = $basePrompt."The changes for this staged git commit file named '$changedFileName' are: $changes";
+    $prompt = $basePrompt." ".$extendingPrompt." The changes for this staged git commit file named '$changedFileName' are: $changes";
 
     $data = [
         'model' => $model,
