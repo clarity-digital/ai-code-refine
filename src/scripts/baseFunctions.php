@@ -1,4 +1,47 @@
 <?php
+function removeGitDiffStyling($diffString) {
+    // Split the diff output into lines
+    $lines = explode("\n", $diffString);
+
+    // Initialize an array to hold the cleaned lines
+    $cleanedLines = [];
+
+    // Loop through each line and remove styling elements
+    foreach ($lines as $line) {
+        // Remove ANSI color codes, if any
+        $line = preg_replace('/\e\[([0-9]{1,2}(;[0-9]{1,2})?)?[m|K]/', '', $line);
+
+        // Skip lines that are git diff metadata
+        if (preg_match('/^(diff --git|index |--- |\+\+\+ |@@ )/', $line)) {
+            continue;
+        }
+
+        // Optionally remove lines that are empty or only whitespace
+        if (trim($line) === '') {
+            continue;
+        }
+
+        // Remove '+' or '-' at the start of the line
+        if (strpos($line, '+') === 0 || strpos($line, '-') === 0) {
+            $line = substr($line, 1);
+        }
+
+        // Remove leading spaces that may have been before '+' or '-'
+        $line = ltrim($line);
+
+        // Add the cleaned line to the array
+        $cleanedLines[] = $line;
+    }
+
+    // Join the cleaned lines back into a string
+    $cleanedDiff = implode("\n", $cleanedLines);
+
+    $cleanedDiff = str_replace('\ No newline at end of file', '', $cleanedDiff);
+    $cleanedDiff = str_replace('/ No newline at end of file', '', $cleanedDiff);
+
+    return $cleanedDiff;
+}
+
 function parseMultiJson($string)
 {
     $lines = explode("\n", trim($string));

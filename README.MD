@@ -8,13 +8,39 @@ Which will be binded to your pre commit script.
 ```bash
 composer require clarity-digital/ollama-code-feedback
 ```
-## Installation
+
+## Table of content
+
+- [Installation - base](#installation---base)
+    - [Step 1 - install Ollama](#step-1---install-ollama)
+    - [Review all current file changes vs primary branch](#review-all-current-file-changes-vs-primary-branch)
+- [Installation - pre commit hook](#installation---pre-commit-hook)
+    - [Step 1 - setup Husky pre-commit](#step-1---setup-husky-pre-commit)
+    - [Step 2 - add Ollama feedback code to the pre-commit script](#step-2---add-ollama-feedback-code-to-the-pre-commit-script)
+- [Configurations](#configurations)
+    - [Example custom config file](#example-custom-config-file)
+
+## Installation - base
 ### Step 1 - install Ollama
 Make sure you have <b>Ollama</b> installed and running (<a href="https://ollama.com/download" target="_blank">link</a>)</br>
 It is up to you which AI model you want to use, but we recommend using: </br>
 <b>llama3</b> (<a href="https://ollama.com/library/llama3" target="_blank">link</a>)
 
-### Step 2 - setup Husky pre-commit
+### <u>Review all current file changes vs primary branch</u>
+#### Execute the following php file
+```bash
+php ./vendor/clarity-digital/ollama-code-feedback/src/scripts/ollamaAllChangesCheck.php
+```
+Make sure you have setup your custom config file to contain the right primary branch name if necessary.
+The default value is ```main```.
+```php
+return [
+    'github_primary_branch_name' => 'main',
+];
+```
+
+## Installation - pre commit hook
+### Step 1 - setup Husky pre-commit
 <b>Install husky if not done already.</b></br></br>
 Follow the installation steps here:
 https://typicode.github.io/husky/get-started.html
@@ -24,7 +50,7 @@ https://typicode.github.io/husky/get-started.html
   npx husky init
 ```
 
-### Step 3 - add Ollama feedback code to the pre-commit script
+### Step 2 - add Ollama feedback code to the pre-commit script
 Add the following line of codes to the ```.husky/pre-commit``` file</br>
 <b>At the start of the script to validate that the A.I. model is running:</b>
 ```php
@@ -35,15 +61,17 @@ php ./vendor/clarity-digital/ollama-code-feedback/src/scripts/ollamaIsRunningChe
 php ./vendor/clarity-digital/ollama-code-feedback/src/scripts/ollamaCodeCheck.php
 ```
 ## Configurations
-By default the following config file is set, which instructs the A.I. model what model to use and what specific code languages and frameworks to focus its feedback on.
+By <b>default</b> the following config file is set, which instructs the A.I. model what model to use and what specific code languages and frameworks to focus its feedback on.
 ```php
 [
-    'model' => 'llama3',
+    'model' => 'deepseek-coder-v2',
     'frameworks' => 'laravel',
-    'github_primary_branch_name' => 'master',
+    'github_primary_branch_name' => 'main',
     'code_languages' => 'php',
-    'modified_files_only' => true, //Or: false, will also take new created staged files into consideration
-    'per_file' => false, //Or: false, will send a request per staged code file
+    //Will also take new created staged files into consideration when set to false:
+    'modified_files_only' => true, 
+    // Will send a request per staged code file (Recommended to be set false)
+    'per_file' => false,
     'extending_prompt' => '',
 ]
 ```
@@ -51,13 +79,13 @@ By default the following config file is set, which instructs the A.I. model what
 <br>
 
 #### You can modify this config file to suit your preferences.
-1. Within your root folder create a ```/config``` directory and within create a file named ```'ai_code_config.php'```.
+1. Within your root folder create a ```/config``` directory and within create a file ```php``` named ```ai_code_config```.
 2. Ensure this config file returns an array. If a config key is not set in the custom config file, the default value(s) will be used.
 
-#### Example custom config file</b>
+#### Example custom config file
 ```php
 return [
-    'model' => 'deepseek-coder-v1',
+    'model' => 'llama3',
     'frameworks' => 'laravel & react',
     'github_primary_branch_name' => 'main',
     'code_languages' => 'php & javascript',

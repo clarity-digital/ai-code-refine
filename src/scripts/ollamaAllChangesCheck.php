@@ -1,11 +1,13 @@
 <?php
 include 'baseFunctions.php';
+include 'ollamaIsRunningCheck.php';
 echo "\n";
-echo "\033[32mRunning Ollama A.I. code check, please wait...\033[0m \n";
+echo "\033[32mRunning Ollama A.I. all changes code check, please wait...\033[0m \n";
 
 //setup
 $config = include 'setConfig.php';
 $model = strval($config['model']);
+
 $codeLanguages = strval($config['code_languages']);
 $frameworks = strval($config['frameworks']);
 $primaryBranchName = strval($config['github_primary_branch_name']);
@@ -18,11 +20,9 @@ $totalFeedbackFilesCount = count($changedFileNames);
 
 foreach ($changedFileNames as $changedFileName) {
     $feedbackFilesIndex++;
-
     $changes = shell_exec("git diff origin/$primaryBranchName...HEAD -U14 ".$changedFileName);
-    var_dump($changedFileName, $basePrompt, $changes);
-    die();
-    $prompt = $basePrompt."The changes for this staged git commit file $changedFileName are: $changes";
+
+    $prompt = $basePrompt."The changes for this staged git commit file named '$changedFileName' are: $changes";
 
     $data = [
         'model' => $model,
@@ -55,13 +55,9 @@ foreach ($changedFileNames as $changedFileName) {
     $parsedBody = parseMultiJson($response);
 
     $responses = array_column($parsedBody, 'response');
-    array_unshift($responses, "\033[33m\033[1m[Ollama feedback]\033[0m \n");
+    array_unshift($responses, "\033[33m\033[1m[Ollama feedback: $changedFileName]\033[0m \n");
     $concatenatedResponse = implode('', $responses);
 
     echo colorizeOutput($concatenatedResponse)."\n";
-    echo "\n\033[33m\033[1mFeedback [$feedbackFilesIndex/$totalFeedbackFilesCount]\033[0m\n";
+    echo "\n\033[33m\033[1mFeedback [$feedbackFilesIndex/$totalFeedbackFilesCount]\033[0m\n\n";
 }
-var_dump($changedFileNames);
-die();
-//$primaryBranchName = strval($config['github_primary_branch_name']);
-
