@@ -1,4 +1,6 @@
 <?php
+namespace src\scripts;
+
 $config = include 'setConfig.php';
 $model = strval($config['model']);
 $codeLanguages = strval($config['code_languages']);

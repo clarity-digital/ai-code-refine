@@ -1,6 +1,8 @@
 <?php
-include 'ollamaIsRunningCheck.php';
-include 'baseFunctions.php';
+namespace src\scripts;
+
+include_once 'ollamaIsRunningCheck.php';
+include_once 'baseFunctions.php';
 
 echo "\n";
 echo "\033[32mRunning Ollama A.I. code check, please wait...\033[0m";

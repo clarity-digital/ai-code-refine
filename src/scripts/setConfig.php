@@ -1,4 +1,6 @@
 <?php
+namespace src\scripts;
+
 $originalConfig = include __DIR__.'/../config/config.php';
 
 if (is_file('./config/ai_code_config.php')) {

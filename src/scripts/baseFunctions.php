@@ -1,4 +1,6 @@
 <?php
+namespace src\scripts;
+
 function removeGitDiffStyling($diffString) {
     // Split the diff output into lines
     $lines = explode("\n", $diffString);

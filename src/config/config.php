@@ -1,4 +1,5 @@
 <?php
+namespace src\config;
 
 return [
     'model' => 'deepseek-coder-v2',

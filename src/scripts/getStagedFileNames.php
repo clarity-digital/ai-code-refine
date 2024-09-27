@@ -1,4 +1,6 @@
 <?php
+namespace src\scripts;
+
 $config = include 'setConfig.php';
 
 $gitStatusResult = shell_exec("git status --porcelain | grep '^M[ ]*'");
@@ -10,6 +12,7 @@ if ($config['modified_files_only'] === false) {
 if ($gitStatusResult == null) {
     return [];
 }
+
 $gitStatusResultArray = explode(PHP_EOL,  trim($gitStatusResult));
 
 for ($i = 0; $i < count($gitStatusResultArray); $i++) {
